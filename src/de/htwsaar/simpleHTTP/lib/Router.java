@@ -65,7 +65,7 @@ public class Router implements HttpHandler {
      * @throws IOException
      */
     private static void handleInternalServerError(Request req, Response res) throws IOException {
-        res.withStatusCode(500).send("Internal Server Error");
+        res.withStatusCode(Response.HTTP_INTERNAL_SERVER_ERROR).text("Internal Server Error");
     }
 
     /**
@@ -75,6 +75,6 @@ public class Router implements HttpHandler {
      * @param res Response Object
      */
     private static void handleNotFound(Request req, Response res) throws IOException {
-        res.withStatusCode(404).send("Not Found");
+        res.withStatusCode(Response.HTTP_NOT_FOUND).text("Not Found");
     }
 }

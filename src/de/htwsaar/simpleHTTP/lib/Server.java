@@ -31,12 +31,19 @@ public class Server {
     }
 
     /**
+     * Stops the server
+     */
+    public void stop() {
+        this.server.stop(0);
+    }
+
+    /**
      * Adds a new router at a given context
      *
      * @param path Context of the router, i.e. /
      * @param router Actual router
      */
     public void addRouter(String path, Router router) {
-        this.server.createContext("/", router);
+        this.server.createContext(path, router);
     }
 }

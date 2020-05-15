@@ -1,4 +1,4 @@
-package de.htwsaar.demo;
+package de.htwsaar.demo.Server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +29,10 @@ public class Database {
         }
 
         return Database.dummyDB;
+    }
+
+    public void clear() {
+        this.container.clear();
     }
 
     /**

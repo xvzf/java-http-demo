@@ -1,9 +1,10 @@
-package de.htwsaar.demo;
+package de.htwsaar.demo.Server;
 
 import de.htwsaar.simpleHTTP.lib.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class Demo {
 
@@ -36,16 +37,18 @@ public class Demo {
     public static void getID(Request req, Response res) throws IOException {
         String id = getId(req);
         if (id == null) {
-            res.withStatusCode(400).send("Missing ID");
+            res.withStatusCode(Response.HTTP_BAD_REQUEST).text("Missing ID");
             return;
         }
 
         // Query ID in the dummy database & send row
-        res.send(
-                Database.getInstance()
-                        .select(id)
-                        .toString()
-        );
+        var resultSet = Database.getInstance().select(id);
+
+        if(resultSet.isEmpty()) {
+            res.withStatusCode(Response.HTTP_NOT_FOUND).text("Key not found");
+        }
+
+        res.json(resultSet);
     }
 
     /**
@@ -55,10 +58,8 @@ public class Demo {
     public static void getAll(Request req, Response res) throws IOException {
 
         // Send everything contained in the dummy database
-        res.send(
-                Database.getInstance()
-                        .select()
-                        .toString()
+        res.json(
+                Database.getInstance().select()
         );
     }
 
@@ -69,16 +70,16 @@ public class Demo {
     public static void addData(Request req, Response res) throws IOException {
         String id = getId(req);
         if (id == null) {
-            res.withStatusCode(400).send("Missing ID");
+            res.withStatusCode(Response.HTTP_BAD_REQUEST).text("Missing ID");
             return;
         }
 
         boolean ok = Database.getInstance().insert(id, req.getPayload());
 
         if (!ok) {
-            res.withStatusCode(409).send("ID already exists");
+            res.withStatusCode(409).text("ID already exists");
         }
-        res.send("OK");
+        res.text("OK");
     }
 
     /**
@@ -88,16 +89,16 @@ public class Demo {
     public static void updateData(Request req, Response res) throws IOException {
         String id = getId(req);
         if (id == null) {
-            res.withStatusCode(400).send("Missing ID");
+            res.withStatusCode(Response.HTTP_BAD_REQUEST).text("Missing ID");
             return;
         }
 
-        boolean ok = Database.getInstance().insert(id, req.getPayload());
+        boolean ok = Database.getInstance().update(id, req.getPayload());
 
         if (!ok) {
-            res.withStatusCode(404).send("Key not found");
+            res.withStatusCode(Response.HTTP_NOT_FOUND).text("Key not found");
         }
-        res.send("OK");
+        res.text("OK");
     }
 
     /**
@@ -107,16 +108,16 @@ public class Demo {
     public static void deleteData(Request req, Response res) throws IOException {
         String id = getId(req);
         if (id == null) {
-            res.withStatusCode(400).send("Missing ID");
+            res.withStatusCode(Response.HTTP_BAD_REQUEST).text("Missing ID");
             return;
         }
 
         boolean ok = Database.getInstance().delete(id);
 
         if (!ok) {
-            res.withStatusCode(404).send("Key not found");
+            res.withStatusCode(Response.HTTP_NOT_FOUND).text("Key not found");
         }
-        res.send("OK");
+        res.text("OK");
     }
 
     public static void main(String[] args) {
